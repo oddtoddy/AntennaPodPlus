@@ -815,7 +815,15 @@ public class PlaybackService extends MediaBrowserServiceCompat {
         @Override
         public void positionSaverTick() {
             saveCurrentPosition(true, null, Playable.INVALID_TIME);
+            Playable current = getPlayable();
+            if (current != null) {
+                String currentChapter = getCurrentChapterTitle(current);
+                if (!java.util.Objects.equals(currentChapter, lastNotifiedChapterTitle)) {
+                    updateMediaSessionMetadata(current);
+                }
+            }
         }
+
 
         @Override
         public WidgetUpdater.WidgetState requestWidgetState() {
@@ -1398,17 +1406,37 @@ public class PlaybackService extends MediaBrowserServiceCompat {
         updateMediaSessionMetadata(p);
     }
 
+    private String lastNotifiedChapterTitle = null;
+
+    private String getCurrentChapterTitle(final Playable p) {
+        if (p == null || p.getChapters() == null || p.getChapters().isEmpty()) {
+            return null;
+        }
+        int pos = p.getPosition();
+        for (int i = p.getChapters().size() - 1; i >= 0; i--) {
+            if (p.getChapters().get(i).getStart() <= pos) {
+                String title = p.getChapters().get(i).getTitle();
+                return (title != null && !title.trim().isEmpty()) ? title.trim() : null;
+            }
+        }
+        return null;
+    }
+
     private void updateMediaSessionMetadata(final Playable p) {
         if (p == null || mediaSession == null) {
             return;
         }
+        String chapterTitle = getCurrentChapterTitle(p);
+        lastNotifiedChapterTitle = chapterTitle;
+        String displayTitle = (chapterTitle != null) ? chapterTitle : p.getEpisodeTitle();
+        String albumTitle = (chapterTitle != null) ? p.getEpisodeTitle() : p.getFeedTitle();
 
         MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
         builder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, p.getFeedTitle());
-        builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, p.getEpisodeTitle());
-        builder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, p.getFeedTitle());
+        builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, displayTitle);
+        builder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumTitle);
         builder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, p.getDuration());
-        builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, p.getEpisodeTitle());
+        builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, displayTitle);
         builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, p.getFeedTitle());
 
 

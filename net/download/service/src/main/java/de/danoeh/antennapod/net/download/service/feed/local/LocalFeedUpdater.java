@@ -47,6 +47,9 @@ import de.danoeh.antennapod.parser.media.id3.Id3MetadataReader;
 import de.danoeh.antennapod.parser.media.m4a.M4AMetadataReader;
 import de.danoeh.antennapod.parser.media.vorbis.VorbisCommentMetadataReader;
 import de.danoeh.antennapod.parser.media.vorbis.VorbisCommentReaderException;
+import de.danoeh.antennapod.parser.media.id3.ChapterReader;
+import de.danoeh.antennapod.storage.database.SmartPlayManager;
+
 
 public class LocalFeedUpdater {
     private static final String TAG = "LocalFeedUpdater";
@@ -118,14 +121,23 @@ public class LocalFeedUpdater {
             }
         }
 
-        // remove feed items without corresponding file
+        // keep played/listened items for statistics even if the file is deleted
         Iterator<FeedItem> it = newItems.iterator();
         while (it.hasNext()) {
             FeedItem feedItem = it.next();
             if (!mediaFileNames.contains(feedItem.getLink())) {
-                it.remove();
+                boolean hasListeningHistory = feedItem.isPlayed()
+                        || (feedItem.getMedia() != null && feedItem.getMedia().getPlayedDuration() > 0);
+                if (hasListeningHistory) {
+                    feedItem.setPlayed(true);
+                    DBWriter.removeQueueItem(context, false, feedItem);
+                } else {
+                    it.remove();
+                }
             }
         }
+
+
 
         feed.setImageUrl(getImageUrl(allFiles, folderUri));
 
@@ -134,6 +146,8 @@ public class LocalFeedUpdater {
         feed.setAuthor(context.getString(R.string.local_folder));
 
         FeedDatabaseWriter.updateFeed(context, feed, true);
+        SmartPlayManager.rebuildQueueIfAutoEnabled(context);
+
 
         return feed;
     }
@@ -188,7 +202,8 @@ public class LocalFeedUpdater {
         for (FeedItem existingItem : feed.getItems()) {
             if (existingItem.getMedia() != null
                     && existingItem.getMedia().getDownloadUrl().equals(file.getUri().toString())
-                    && file.getLength() == existingItem.getMedia().getSize()) {
+                    && file.getLength() == existingItem.getMedia().getSize()
+                    && existingItem.hasChapters()) {
                 // We found an old file that we already scanned. Re-use metadata.
                 item.updateFromOther(existingItem);
                 return item;
@@ -239,6 +254,20 @@ public class LocalFeedUpdater {
                         new CountingInputStream(new BufferedInputStream(inputStream)));
                 reader.readInputStream();
                 item.setDescriptionIfLonger(reader.getComment());
+                try (InputStream chapStream = context.getContentResolver().openInputStream(file.getUri())) {
+                    ChapterReader chapterReader = new ChapterReader(
+                            new CountingInputStream(new BufferedInputStream(chapStream)));
+                    chapterReader.readInputStream();
+
+                    List<de.danoeh.antennapod.model.feed.Chapter> chapters = chapterReader.getChapters();
+                    if (chapters != null && !chapters.isEmpty()) {
+                        java.util.Collections.sort(chapters, (a, b) -> Long.compare(a.getStart(), b.getStart()));
+                        item.setChapters(chapters);
+                    }
+
+                }
+
+
             } catch (IOException | ID3ReaderException e) {
                 Log.d(TAG, "Unable to parse ID3 of " + file.getUri() + ": " + e.getMessage());
 

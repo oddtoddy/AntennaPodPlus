@@ -77,6 +77,7 @@ public class DataFolderAdapter extends RecyclerView.Adapter<DataFolderAdapter.Vi
         final List<File> mediaDirs = new ArrayList<>();
         mediaDirs.addAll(Arrays.asList(context.getExternalFilesDirs(null)));
         mediaDirs.addAll(Arrays.asList(context.getExternalMediaDirs()));
+        mediaDirs.add(new File("/storage/emulated/0/Podcasts"));
         final List<StoragePath> entries = new ArrayList<>(mediaDirs.size());
         for (File dir : mediaDirs) {
             if (!isWritable(dir)) {
@@ -89,6 +90,7 @@ public class DataFolderAdapter extends RecyclerView.Adapter<DataFolderAdapter.Vi
         }
         return entries;
     }
+
 
     private boolean isWritable(File dir) {
         return dir != null && dir.exists() && dir.canRead() && dir.canWrite();

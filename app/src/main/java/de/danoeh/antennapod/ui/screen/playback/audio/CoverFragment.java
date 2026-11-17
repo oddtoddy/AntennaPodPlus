@@ -235,8 +235,16 @@ public class CoverFragment extends Fragment {
             }
         }
 
+        Chapter currentChapter = getCurrentChapter();
+        String titleToShow = (currentChapter != null && !TextUtils.isEmpty(currentChapter.getTitle()))
+                ? currentChapter.getTitle()
+                : media.getEpisodeTitle();
+        viewBinding.txtvEpisodeTitle.setText(titleToShow);
+        viewBinding.txtvEpisodeTitle.setOnLongClickListener(v -> copyText(titleToShow));
+
         displayCoverImage();
     }
+
 
     private Chapter getCurrentChapter() {
         if (media == null || media.getChapters() == null || displayedChapterIndex == -1) {

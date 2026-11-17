@@ -48,6 +48,7 @@
 
     <string-array name="feed_refresh_interval_entries">
         <item>@string/feed_refresh_never</item>
+        <item>15 minutes</item>
         <item>@string/feed_every_hour</item>
         <item>@string/feed_every_2_hours</item>
         <item>@string/feed_every_4_hours</item>
@@ -59,6 +60,7 @@
 
     <string-array name="feed_refresh_interval_values">
         <item>0</item>
+        <item>15</item>
         <item>60</item>
         <item>120</item>
         <item>240</item>

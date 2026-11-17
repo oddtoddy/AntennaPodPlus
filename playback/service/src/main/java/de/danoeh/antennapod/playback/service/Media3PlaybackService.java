@@ -57,6 +57,7 @@ import de.danoeh.antennapod.playback.service.internal.ClockSleepTimer;
 import de.danoeh.antennapod.playback.service.internal.EpisodeSleepTimer;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.database.SmartPlayManager;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerType;
@@ -590,7 +591,9 @@ public class Media3PlaybackService extends MediaLibraryService {
                                 DBWriter.addQueueItem(this, media.getItem());
                             }
                             switchToPlayable(media);
-                        },
+                                    updateChapterArtwork();
+
+                                },
                                 error -> Log.e(TAG, "Failed to load current media", error));
 
             }
@@ -609,27 +612,51 @@ public class Media3PlaybackService extends MediaLibraryService {
                 || isCasting()) {
             return;
         }
-        int chapterIndex = UserPreferences.getUseEpisodeCoverSetting()
-                ? Chapter.getAfterPosition(currentPlayable.getChapters(), (int) player.getCurrentPosition()) : -1;
+        List<Chapter> chapters = currentPlayable.getChapters();
+        int chapterIndex = (chapters != null && !chapters.isEmpty())
+                ? Chapter.getAfterPosition(chapters, (int) player.getCurrentPosition()) : -1;
         if (chapterIndex == lastChapterArtworkIndex) {
             return;
         }
         lastChapterArtworkIndex = chapterIndex;
         MediaItem currentItem = player.getCurrentMediaItem();
         FeedMedia playable = currentPlayable;
+        int artworkChapterIndex = UserPreferences.getUseEpisodeCoverSetting() ? chapterIndex : -1;
         if (chapterArtworkDisposable != null) {
             chapterArtworkDisposable.dispose();
         }
         chapterArtworkDisposable = Single
-                .fromCallable(() -> MediaItemAdapter.withChapterArtwork(this, currentItem, playable, chapterIndex))
+                .fromCallable(() -> {
+                    MediaItem itemWithArt = MediaItemAdapter.withChapterArtwork(
+                            this, currentItem, playable, artworkChapterIndex);
+                    String chapterTitle = (chapters != null && chapterIndex >= 0 && chapterIndex < chapters.size())
+                            ? chapters.get(chapterIndex).getTitle() : null;
+                    String displayTitle = (chapterTitle != null && !chapterTitle.trim().isEmpty())
+                            ? chapterTitle.trim() : playable.getEpisodeTitle();
+                    String albumTitle = (chapterTitle != null && !chapterTitle.trim().isEmpty())
+                            ? playable.getEpisodeTitle() : playable.getFeedTitle();
+
+                    androidx.media3.common.MediaMetadata newMetadata = itemWithArt.mediaMetadata.buildUpon()
+                            .setTitle(displayTitle)
+                            .setDisplayTitle(displayTitle)
+                            .setArtist(playable.getFeedTitle())
+                            .setAlbumTitle(albumTitle)
+                            .setSubtitle(playable.getFeedTitle())
+                            .build();
+
+                    return itemWithArt.buildUpon()
+                            .setMediaMetadata(newMetadata)
+                            .build();
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(updatedItem -> {
                     if (!isCasting()) {
                         player.replaceMediaItem(player.getCurrentMediaItemIndex(), updatedItem);
                     }
-                }, error -> Log.e(TAG, "Failed to update chapter artwork", error));
+                }, error -> Log.e(TAG, "Failed to update chapter metadata", error));
     }
+
 
     @OptIn(markerClass = UnstableApi.class)
     private boolean confirmStreamingIfNeeded(FeedMedia media) {
@@ -883,15 +910,24 @@ public class Media3PlaybackService extends MediaLibraryService {
         }
         int startPosition = playbackStartPosition;
         queueLoaderDisposable = Maybe.fromCallable(() -> {
-            FeedItem nextItem = DBReader.getNextInQueue(item);
-            boolean hasNext = nextItem != null && nextItem.getMedia() != null;
-            updateDatabaseAfterPlayback(media, startPosition, ended, wasSkipped, hasNext);
-            if (hasNext) {
-                return new Pair<>(nextItem.getMedia(),
-                        MediaItemAdapter.fromPlayable(Media3PlaybackService.this, nextItem.getMedia(), false));
-            }
-            return null;
-        })
+                    FeedItem nextItem = DBReader.getNextInQueue(item);
+                    boolean hasNext = nextItem != null && nextItem.getMedia() != null;
+                    updateDatabaseAfterPlayback(media, startPosition, ended, wasSkipped, hasNext);
+                    if (!hasNext && ended && !wasSkipped && SmartPlayManager.isAutoRebuildEnabled(this)) {
+                        SmartPlayManager.rebuildQueueSync(this);
+                        List<FeedItem> rebuiltQueue = DBReader.getQueue();
+                        if (!rebuiltQueue.isEmpty()) {
+                            nextItem = rebuiltQueue.get(0);
+                            hasNext = nextItem.getMedia() != null;
+                        }
+                    }
+                    if (hasNext) {
+                        return new Pair<>(nextItem.getMedia(),
+                                MediaItemAdapter.fromPlayable(Media3PlaybackService.this, nextItem.getMedia(), false));
+                    }
+                    return null;
+                })
+
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -919,6 +955,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                                         if (currentPlayable != null
                                                 && currentPlayable.getId() == mediaWithChapters.getId()) {
                                             currentPlayable.setChapters(mediaWithChapters.getChapters());
+                                            updateChapterArtwork();
                                         }
                                     }, error -> Log.e(TAG, "Failed to load chapters", error));
                         },
@@ -934,6 +971,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                             if (wasSkipped) {
                                 EventBus.getDefault().post(new MessageEvent(getString(R.string.no_following_in_queue)));
                             }
+                            SmartPlayManager.rebuildQueueIfAutoEnabled(this);
                         });
     }
 

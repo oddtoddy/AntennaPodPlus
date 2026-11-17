@@ -291,6 +291,11 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         final int itemId = item.getItemId();
+        if (itemId == 999901) {
+            SmartPlayDialog.show(requireContext());
+            return true;
+        }
+
         if (itemId == R.id.queue_lock) {
             toggleQueueLock();
             return true;
@@ -421,6 +426,9 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         }
         ((MainActivity) getActivity()).setupToolbarToggle(toolbar, displayUpArrow);
         toolbar.inflateMenu(R.menu.queue);
+        toolbar.getMenu().add(Menu.NONE, 999901, Menu.NONE, "SmartPlay")
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
         refreshToolbarState();
         progressBar = root.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
