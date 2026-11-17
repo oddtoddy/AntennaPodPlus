@@ -2,7 +2,7 @@
 
 A customized fork of [AntennaPod](https://github.com/AntennaPod/AntennaPod) that brings back classic **BeyondPod SmartPlay** rule-based playlists, live chapter titles on the Now Playing screen, and faster refresh intervals.
 
-👉 **[Download the latest APK on the Releases page]([https://github.com/oddtoddy/AntennaPodPlus/releases])**
+👉 **[Download the latest APK on the Releases page](https://github.com/oddtoddy/AntennaPodPlus/releases)**
 
 ---
 
