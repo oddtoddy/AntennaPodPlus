@@ -1,44 +1,49 @@
-# AntennaPod
+# AntennaPodPlus
 
-[![GitHub check runs](https://img.shields.io/github/actions/workflow/status/AntennaPod/AntennaPod/checks.yml?branch=develop)](https://github.com/AntennaPod/AntennaPod/actions/workflows/checks.yml?query=branch%3Adevelop)
-[![License: GPL v3](https://img.shields.io/github/license/AntennaPod/AntennaPod)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub Release](https://img.shields.io/github/v/release/AntennaPod/AntennaPod)](https://github.com/AntennaPod/AntennaPod/releases)
-[![https://img.shields.io/github/commits-since/AntennaPod/AntennaPod/latest/develop](https://img.shields.io/github/commits-since/AntennaPod/AntennaPod/latest/develop)](https://github.com/AntennaPod/AntennaPod/commits/develop/)
-[![Translations on Weblate](https://hosted.weblate.org/widget/antennapod/app/svg-badge.svg?native=1)](https://hosted.weblate.org/engage/antennapod/)
-[![Good first issue](https://img.shields.io/github/issues-search?query=repo%3AAntennaPod%2FAntennaPod%20is%3Aopen%20is%3Aissue%20label%3A%22Good%20first%20issue%22&label=Good%20first%20issue&labelColor=grey&color=%235F1984)](https://github.com/AntennaPod/AntennaPod/labels/Good%20first%20issue)
+A customized fork of [AntennaPod](https://github.com) that brings back classic **BeyondPod SmartPlay** rule-based playlists, live chapter titles on the Now Playing screen, and faster refresh intervals.
 
-This is the official repository of AntennaPod, the easy-to-use, flexible and open-source podcast manager for Android.
+👉 **[Download the latest APK on the Releases page](https://github.com)**
 
-[<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
-      alt="Get it on Google Play"
-      height="70">](https://play.google.com/store/apps/details?id=de.danoeh.antennapod)
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-      alt="Get it on F-Droid"
-      height="70">](https://f-droid.org/app/de.danoeh.antennapod)
+---
 
-<img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/00.png" alt="Screenshot 0" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/01.png" alt="Screenshot 1" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/02.png" alt="Screenshot 2" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/03.png" alt="Screenshot 3" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/04.png" alt="Screenshot 4" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/05.png" alt="Screenshot 5" height="200">
+### What's New in AntennaPodPlus
+* **BeyondPod-Style SmartPlay Builder:** Stack multi-rule smart playlists (`START WITH` / `THEN PLAY`) by tag/category, individual feed, or all subscriptions (oldest, newest, or random), with optional downloaded-only filtering.
+* **Continuous Auto-Rebuild:** Automatically rebuilds your SmartPlay queue on local sync/download or when the last episode finishes—and keeps playing seamlessly.
+* **Live Chapter Titles & Local ID3 Chapters:** Displays active chapter titles directly on the Now Playing screen and reads embedded ID3 chapters from local folders.
+* **15-Minute Refresh Interval:** Adds a 15-minute background podcast refresh option under **Settings → Downloads → Refresh podcasts**.
+* **Pano Scrobbler & Permanent Stats Support.**
+
+---
 
 
-## Feedback
-You can use the [AntennaPod Forum](https://forum.antennapod.org/) for discussions about the app or just podcasting in general.
-
-Bug reports and feature requests can be submitted [here](https://github.com/AntennaPod/AntennaPod/issues) (please read the [instructions](https://github.com/AntennaPod/AntennaPod/blob/develop/CONTRIBUTING.md) on how to report a bug and how to submit a feature request first!).
-
-We also hold regular community calls to discuss anything AntennaPod-related. [Come join the next call](https://forum.antennapod.org/t/monthly-community-call/1869)!
-
-## Help to test AntennaPod
-AntennaPod has many users and we don't want them to run into trouble when we add a new feature. It's important that we have a significant group test our app, so that we know all possible combinations of phones, Android versions and use cases work as expected. Check out our wiki on how to join our [Beta testing program](https://antennapod.org/documentation/general/beta)! If a bug is reported during the beta period, chances are high that it will be fixed before the upcoming stable version. If it is reported later, fixing might take another full beta cycle. So definitely let us know if something is not right.
-
-## License
-
-AntennaPod is licensed under the GNU General Public License (GPL-3.0). You can find the license text in the [LICENSE](https://github.com/AntennaPod/AntennaPod/blob/develop/LICENSE) file.
-
-## Translating AntennaPod
-
-If you want to translate AntennaPod into another language, you can visit our [Weblate page](https://hosted.weblate.org/projects/antennapod/).
 
 
-## Building AntennaPod
 
-You can build AntennaPod just like any other Android project. Refer to the [instructions](https://github.com/AntennaPod/AntennaPod/blob/develop/CONTRIBUTING.md) for more details.
 
+Smartplay:
+
+
+<img width="1824" height="1042" alt="image" src="https://github.com/user-attachments/assets/0265ce5d-2449-4f45-9e2e-56a8508d3872" />
+<img width="1631" height="957" alt="image" src="https://github.com/user-attachments/assets/4086894f-55d6-4490-983b-cfdf5966769a" />
+<img width="1222" height="767" alt="image" src="https://github.com/user-attachments/assets/2411d929-e1e2-4dcf-97ad-4607c658a04b" />
+<img width="1713" height="948" alt="image" src="https://github.com/user-attachments/assets/14bd118d-cb61-440b-965f-ef7f3432edff" />
+<img width="1723" height="941" alt="image" src="https://github.com/user-attachments/assets/9df6aba9-edfd-4085-81fc-1a5e73ee1893" />
+<img width="1222" height="795" alt="image" src="https://github.com/user-attachments/assets/59977b54-002f-4922-98df-9f32fe2581b6" />
+
+
+
+Chapters in Now Playing:
+
+<img width="1816" height="1066" alt="image" src="https://github.com/user-attachments/assets/e554ef1d-df62-44f4-ae19-b358f5e0de97" />
+<img width="1804" height="931" alt="image" src="https://github.com/user-attachments/assets/9612a13f-c5fe-49c7-88bb-9e2aaeb3637b" />
+<img width="1193" height="781" alt="image" src="https://github.com/user-attachments/assets/abb8ba6a-2139-4cd5-8194-5e696ab701a9" />
+<img width="1810" height="902" alt="image" src="https://github.com/user-attachments/assets/0c9c35ba-ec92-4017-8289-9a13d9e7ee6c" />
+<img width="1503" height="567" alt="image" src="https://github.com/user-attachments/assets/1703491c-cd8c-4895-9e32-7289b103c450" />
+
+
+Refresh: 
+<img width="1572" height="1004" alt="image" src="https://github.com/user-attachments/assets/e292207d-6f90-4d0e-a12a-b0bf8cb25b0d" />
+
+
+### License
+AntennaPodPlus is licensed under the GNU General Public License v3.0 (GPL-3.0), inherited from upstream [AntennaPod](https://github.com).
